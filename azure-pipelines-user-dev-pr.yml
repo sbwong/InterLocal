@@ -1,0 +1,24 @@
+trigger:
+  branches:
+    exclude:
+      - '*'
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'build'
+      projects: 'backend/UserManagement/**/*.csproj'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'test'
+      projects: 'backend/UserManagement/**/*.csproj'
+    env:
+      JWT_SECRET_KEY: $(JWT_SECRET_KEY)
+      DB_HOST: $(DB_HOST)
+      DB_USER: $(DB_USER)
+      DB_NAME: $(DB_NAME)
+      DB_PORT: $(DB_PORT)
+      DB_PASSWORD: $(DB_PASSWORD)

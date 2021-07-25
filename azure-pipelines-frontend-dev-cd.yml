@@ -1,0 +1,26 @@
+trigger:
+  branches:
+    include:
+      - develop
+  paths:
+    include:
+      - frontend
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: Bash@3
+    inputs:
+      targetType: 'inline'
+      script: |
+        yarn
+        yarn build
+        CI=true yarn test
+      workingDirectory: 'frontend'
+      failOnStderr: false
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: 'frontend/build'
+      ArtifactName: 'frontend-dev-build'
+      publishLocation: 'Container'

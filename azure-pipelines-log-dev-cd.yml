@@ -1,0 +1,33 @@
+trigger:
+  branches:
+    include:
+      - develop
+  paths:
+    include:
+      - backend/LoggingFunctionApp
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'build'
+      projects: 'backend/LoggingFunctionApp/**/*.csproj'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'test'
+      projects: 'backend/LoggingFunctionApp/**/*.csproj'
+    env:
+      APPINSIGHTS_INSTRUMENTATIONKEY: $(APPINSIGHTS_INSTRUMENTATIONKEY)
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'publish'
+      publishWebProjects: false
+      projects: 'backend/LoggingFunctionApp/LoggingFunctionApp.csproj'
+      arguments: '--output $(Build.ArtifactStagingDirectory)'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'log-dev-build'
+      publishLocation: 'Container'

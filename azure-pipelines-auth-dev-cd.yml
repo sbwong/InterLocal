@@ -1,0 +1,40 @@
+trigger:
+  branches:
+    include:
+      - develop
+  paths:
+    include:
+      - backend/Authentication
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'build'
+      projects: 'backend/Authentication/**/*.csproj'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'test'
+      projects: 'backend/Authentication/**/*.csproj'
+    env:
+      DB_HOST: $(DB_HOST)
+      DB_USER: $(DB_USER)
+      DB_NAME: $(DB_NAME)
+      DB_PORT: $(DB_PORT)
+      DB_PASSWORD: $(DB_PASSWORD)
+      JWT_SECRET_KEY: $(JWT_SECRET_KEY)
+      AUTH_AES256_IV: $(AUTH_AES256_IV)
+      AUTH_AES256_KEY: $(AUTH_AES256_KEY)
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'publish'
+      publishWebProjects: false
+      projects: 'backend/Authentication/Authentication/Authentication.csproj'
+      arguments: '--output $(Build.ArtifactStagingDirectory)'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'auth-dev-build'
+      publishLocation: 'Container'

@@ -1,0 +1,28 @@
+trigger:
+  branches:
+    include:
+      - develop
+  paths:
+    include:
+      - backend/Resource
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'build'
+      projects: 'backend/Resource/**/*.csproj'
+
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'publish'
+      publishWebProjects: false
+      projects: 'backend/Resource/FunctionApp/FunctionApp.csproj'
+      arguments: '--output $(Build.ArtifactStagingDirectory)'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'resource-dev-build'
+      publishLocation: 'Container'

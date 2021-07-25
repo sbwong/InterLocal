@@ -1,0 +1,1 @@
+CREATE INDEX tag_name_index on tag (tag_name);
